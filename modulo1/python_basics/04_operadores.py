@@ -31,3 +31,9 @@ print("n//2", n)
 
 n**=2
 print("n**2", n)
+
+
+print("Operadores Logicos")
+print("========================================")
+print("Operadores Comparacion")
+print("========================================")
