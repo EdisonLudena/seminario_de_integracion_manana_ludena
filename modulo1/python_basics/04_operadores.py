@@ -1,0 +1,39 @@
+#Operadores Matematicos
+a = 15
+b = 20
+
+print("Suma")
+print(a,"+",b,"=",a+b)
+print("Resta")
+print(a,"-",b,"=",a-b)
+print("Multiplicacion")
+print(a,"*",b,"=",a*b)
+print("Division")
+print(a,"//",b,"=",a//b)
+print("Division Entera")
+print(a,"/",b,"=",a/b)
+
+print("Modulo")
+print(a,"%",b,"=",a%b)
+print("Operadores de Asignacion")
+print("========================================")
+n=10
+n+=5
+print("n+5", n)
+n-=3
+print("n-3", n)
+
+n*=2
+print("n*2", n)
+
+n//=2
+print("n//2", n)
+
+n**=2
+print("n**2", n)
+
+
+print("Operadores Logicos")
+print("========================================")
+print("Operadores Comparacion")
+print("========================================")

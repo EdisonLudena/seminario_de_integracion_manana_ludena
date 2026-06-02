@@ -1,0 +1,5 @@
+nombre_usuario = input("¿Cuál es el nombre del Director Técnico / Scout?: ")
+print(f"¡Bienvenido al sistema de gestión, Coach {nombre_usuario}!")
+edad_prospecto = input("Ingrese la edad del jugador para asignarlo a una categoría (ej. Inferiores): ")
+edad_entero = int(edad_prospecto)
+print(f"¡Jugador registrado correctamente con {edad_entero} años!")
