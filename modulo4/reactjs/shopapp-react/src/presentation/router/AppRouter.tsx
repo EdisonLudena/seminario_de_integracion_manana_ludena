@@ -7,6 +7,7 @@ import ProtectedRoute from './ProtectedRoute'
 import PlaceholderPage from '../pages/PlaceholderPage'
 import AppShell from '../components/AppShell'
 import CatalogPage from '../pages/catalog/CatalogPage'
+import ProductDetailPage from '../pages/catalog/ProductDetailPage'
 
 // ─── Lazy imports ─────────────────────────────────────────────────────────────
 
@@ -52,7 +53,7 @@ export default function AppRouter() {
             {/* Públicas — placeholder hasta el módulo 4/5 */}
             <Route path="/" element={<CatalogPage />} />
             <Route path="/catalog" element={<Route path="/catalog" element={<CatalogPage />} />} />
-            <Route path="/products/:id" element={<PlaceholderPage title="Detalle de producto — Módulo 5" />} />
+            <Route path="/products/:id" element={<ProductDetailPage />} />
 
             {/* Requieren autenticación — placeholder hasta los módulos 6, 7 y 8 */}
             <Route
