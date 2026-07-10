@@ -8,6 +8,10 @@ import PlaceholderPage from '../pages/PlaceholderPage'
 import AppShell from '../components/AppShell'
 import CatalogPage from '../pages/catalog/CatalogPage'
 import ProductDetailPage from '../pages/catalog/ProductDetailPage'
+import CartPage from '../pages/cart/CartPage'
+import CheckoutPage from '../pages/orders/CheckoutPage'
+import OrdersPage from '../pages/orders/OrdersPage'
+import OrderDetailPage from '../pages/orders/OrderDetailPage'
 
 // ─── Lazy imports ─────────────────────────────────────────────────────────────
 
@@ -60,7 +64,7 @@ export default function AppRouter() {
               path="/cart"
               element={
                 <ProtectedRoute>
-                  <PlaceholderPage title="Carrito — Módulo 6" />
+                  <CartPage />
                 </ProtectedRoute>
               }
             />
@@ -68,7 +72,7 @@ export default function AppRouter() {
               path="/orders"
               element={
                 <ProtectedRoute>
-                  <PlaceholderPage title="Órdenes — Módulo 7" />
+                <OrdersPage />
                 </ProtectedRoute>
               }
             />
@@ -76,11 +80,19 @@ export default function AppRouter() {
               path="/orders/:id"
               element={
                 <ProtectedRoute>
-                  <PlaceholderPage title="Detalle de orden — Módulo 7" />
+                <OrderDetailPage />
                 </ProtectedRoute>
               }
             />
             <Route
+                path="/orders/new"
+                element={
+                    <ProtectedRoute>
+                    <CheckoutPage />
+                    </ProtectedRoute>
+                }
+                />
+                        <Route
               path="/profile"
               element={
                 <ProtectedRoute>
