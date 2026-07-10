@@ -15,6 +15,9 @@ import {
 import { Avatar, AvatarFallback } from '@/presentation/components/ui/avatar'
 import { Separator } from '@/presentation/components/ui/separator'
 import { useCartStore } from '../store/cart.store'
+import { useProfileStore } from '../store/profile.store'
+import { useEffect } from 'react'
+import { UserAvatar } from './UserAvatar'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -36,12 +39,18 @@ function navLinkClass({ isActive }: { isActive: boolean }) {
 export default function AppShell() {
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
-
+  const { profile, fetchProfile, clearProfile } = useProfileStore()
   const cartItemCount = useCartStore((s) => s.itemCount())
-
+  
+  useEffect(() => {
+    if (user && !profile) {
+      fetchProfile()
+    }
+  }, [user, profile, fetchProfile])
 
   async function handleLogout() {
     await logout()
+    clearProfile()
     navigate('/login', { replace: true })
   }
 
@@ -115,17 +124,9 @@ export default function AppShell() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="relative h-9 w-9 rounded-full"
-                    aria-label="Menú de usuario"
-                  >
-                    <Avatar className="h-9 w-9">
-                      <AvatarFallback className="bg-primary text-primary-foreground text-sm">
-                        {getInitials(user.username)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
+                    <Button variant="ghost" className="relative h-9 w-9 rounded-full" aria-label="Menú de usuario">
+                        <UserAvatar user={profile} size="sm" />
+                    </Button>
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent align="end" className="w-48">
