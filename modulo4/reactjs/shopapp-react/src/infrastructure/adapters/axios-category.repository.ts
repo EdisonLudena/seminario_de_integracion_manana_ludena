@@ -4,8 +4,17 @@ import { parseApiError } from '@/infrastructure/http/parse-api-error'
 import type { CategoryRepository } from '@/domain/ports/category.repository'
 import type { Category } from '@/domain/entities/category.entity'
 import type { PaginatedResult } from '@/domain/entities/paginated-result.entity'
+import type { CategoryStats } from '@/domain/entities/category-stats.entity'
 
 export class AxiosCategoryRepository implements CategoryRepository {
+  async getStats(): Promise<CategoryStats> {
+  try {
+    const { data } = await apiClient.get<CategoryStats>('/categories/stats/')
+    return data
+  } catch (err) {
+    throw parseApiError(err)
+  }
+}
   async getCategories(): Promise<Category[]> {
     try {
       // El backend pagina /categories/ (PAGE_SIZE=10 en config/settings.py).
@@ -20,4 +29,6 @@ export class AxiosCategoryRepository implements CategoryRepository {
       throw parseApiError(err)
     }
   }
+
+  
 }
