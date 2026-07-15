@@ -3,10 +3,15 @@ import { create } from 'zustand'
 import { dashboardUseCase } from '@/infrastructure/factories/dashboard.factory'
 import { categoryUseCase } from '@/infrastructure/factories/category.factory'
 import { productUseCase } from '@/infrastructure/factories/product.factory'
+import { orderUseCase } from '@/infrastructure/factories/order.factory'
+import { userUseCase } from '@/infrastructure/factories/user.factory'
 import { ApiException } from '@/domain/exceptions/api.exception'
 import type { AdminStats } from '@/domain/entities/admin-stats.entity'
 import type { Category } from '@/domain/entities/category.entity'
 import type { Product } from '@/domain/entities/product.entity'
+import type { Order } from '@/domain/entities/order.entity'
+import type { OrderStatus } from '@/domain/enums/order-status.enum'
+import type { AdminUser } from '@/domain/entities/admin-user.entity'
 import type { CreateCategoryDto } from '@/application/dtos/create-category.dto'
 import type { UpdateCategoryDto } from '@/application/dtos/update-category.dto'
 import type { CreateProductDto } from '@/application/dtos/create-product.dto'
@@ -25,6 +30,18 @@ interface AdminState {
   productsTotal: number
   isLoadingProducts: boolean
   productsError: string | null
+
+  adminOrders: Order[]
+  ordersTotal: number
+  isLoadingOrders: boolean
+  ordersError: string | null
+  ordersStatusFilter: OrderStatus | ''
+  ordersPage: number
+
+  adminUsers: AdminUser[]
+  usersTotal: number
+  isLoadingUsers: boolean
+  usersError: string | null
 }
 
 interface AdminActions {
@@ -40,6 +57,15 @@ interface AdminActions {
   updateProduct(id: number, dto: UpdateProductDto): Promise<void>
   deleteProduct(id: number): Promise<void>
   restockProduct(id: number, quantity: number): Promise<number>
+
+  fetchAdminOrders(): Promise<void>
+  setOrdersStatusFilter(status: OrderStatus | ''): void
+  setOrdersPage(page: number): void
+  updateOrderStatus(id: number, status: OrderStatus): Promise<void>
+
+  fetchAdminUsers(page?: number, search?: string): Promise<void>
+  updateUserStaffStatus(id: number, isStaff: boolean): Promise<void>
+  toggleUserActive(id: number): Promise<void>
 }
 
 export const useAdminStore = create<AdminState & AdminActions>((set, get) => ({
@@ -55,6 +81,18 @@ export const useAdminStore = create<AdminState & AdminActions>((set, get) => ({
   productsTotal: 0,
   isLoadingProducts: false,
   productsError: null,
+
+  adminOrders: [],
+  ordersTotal: 0,
+  isLoadingOrders: false,
+  ordersError: null,
+  ordersStatusFilter: '',
+  ordersPage: 1,
+
+  adminUsers: [],
+  usersTotal: 0,
+  isLoadingUsers: false,
+  usersError: null,
 
   async fetchStats() {
     set({ isLoadingStats: true, statsError: null })
@@ -107,8 +145,6 @@ export const useAdminStore = create<AdminState & AdminActions>((set, get) => ({
     }
   },
 
-  // ── Productos (módulo 11) ────────────────────────────────────────────────
-
   async fetchProducts(page = 1, search = '') {
     set({ isLoadingProducts: true, productsError: null })
     try {
@@ -160,6 +196,70 @@ export const useAdminStore = create<AdminState & AdminActions>((set, get) => ({
       return result.new_stock
     } catch (err) {
       throw err instanceof ApiException ? err : new Error('No se pudo actualizar el stock.')
+    }
+  },
+
+  async fetchAdminOrders() {
+    const { ordersPage, ordersStatusFilter } = get()
+    set({ isLoadingOrders: true, ordersError: null })
+    try {
+      const data = await orderUseCase.getOrders(ordersPage, ordersStatusFilter || undefined)
+      set({ adminOrders: data.results, ordersTotal: data.count })
+    } catch {
+      set({ ordersError: 'No se pudieron cargar las órdenes.' })
+    } finally {
+      set({ isLoadingOrders: false })
+    }
+  },
+
+  setOrdersStatusFilter(status) {
+    set({ ordersStatusFilter: status, ordersPage: 1 })
+  },
+
+  setOrdersPage(page) {
+    set({ ordersPage: page })
+  },
+
+  async updateOrderStatus(id, status) {
+    try {
+      const updated = await orderUseCase.updateOrderStatus(id, status)
+      set({ adminOrders: get().adminOrders.map((o) => (o.id === id ? updated : o)) })
+    } catch (err) {
+      throw err instanceof ApiException ? err : new Error('No se pudo actualizar el estado de la orden.')
+    }
+  },
+
+  // ── Usuarios (módulo 13) ─────────────────────────────────────────────────
+
+  async fetchAdminUsers(page = 1, search = '') {
+    set({ isLoadingUsers: true, usersError: null })
+    try {
+      const data = await userUseCase.getUsers(page, search || undefined)
+      set({ adminUsers: data.results, usersTotal: data.count })
+    } catch {
+      set({ usersError: 'No se pudieron cargar los usuarios.' })
+    } finally {
+      set({ isLoadingUsers: false })
+    }
+  },
+
+  async updateUserStaffStatus(id, isStaff) {
+    try {
+      const updated = await userUseCase.updateUserStaffStatus(id, isStaff)
+      set({ adminUsers: get().adminUsers.map((u) => (u.id === id ? updated : u)) })
+    } catch (err) {
+      throw err instanceof ApiException ? err : new Error('No se pudo actualizar el rol del usuario.')
+    }
+  },
+
+  async toggleUserActive(id) {
+    try {
+      const { is_active } = await userUseCase.toggleUserActive(id)
+      set({
+        adminUsers: get().adminUsers.map((u) => (u.id === id ? { ...u, is_active } : u)),
+      })
+    } catch (err) {
+      throw err instanceof ApiException ? err : new Error('No se pudo cambiar el estado del usuario.')
     }
   },
 }))

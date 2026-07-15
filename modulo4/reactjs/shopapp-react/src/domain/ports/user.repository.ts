@@ -1,4 +1,6 @@
 // src/domain/ports/user.repository.ts
+import type { AdminUser } from '../entities/admin-user.entity'
+import type { PaginatedResult } from '../entities/paginated-result.entity'
 import type { UserProfile } from '../entities/user-profile.entity'
 import type { UserStats } from '../entities/user-stats.entity'
 
@@ -9,5 +11,9 @@ export interface UserRepository {
     last_name?: string
     email?: string
   }): Promise<UserProfile>
+
+  getUsers(page?: number, search?: string): Promise<PaginatedResult<AdminUser>>
+  updateUserStaffStatus(id: number, isStaff: boolean): Promise<AdminUser>
+  toggleUserActive(id: number): Promise<{ is_active: boolean }>
   getStats(): Promise<UserStats>
 }

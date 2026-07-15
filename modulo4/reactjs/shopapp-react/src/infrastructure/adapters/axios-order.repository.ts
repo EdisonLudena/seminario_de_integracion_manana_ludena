@@ -5,6 +5,7 @@ import type { OrderRepository } from '@/domain/ports/order.repository'
 import type { Order } from '@/domain/entities/order.entity'
 import type { PaginatedResult } from '@/domain/entities/paginated-result.entity'
 import type { OrderStats } from '@/domain/entities/order-stats.entity'
+import type { OrderStatus } from '@/domain/enums/order-status.enum'
 
 export class AxiosOrderRepository implements OrderRepository {
   async getStats(): Promise<OrderStats> {
@@ -16,17 +17,16 @@ export class AxiosOrderRepository implements OrderRepository {
   }
 }
 
-  async getOrders(page = 1): Promise<PaginatedResult<Order>> {
-    try {
-      const { data } = await apiClient.get<PaginatedResult<Order>>('/orders/', {
-        params: { page },
-      })
-      return data
-    } catch (err) {
-      throw parseApiError(err)
-    }
+  async getOrders(page = 1, status?: OrderStatus): Promise<PaginatedResult<Order>> {
+  try {
+    const params: Record<string, string | number> = { page }
+    if (status) params.status = status
+    const { data } = await apiClient.get<PaginatedResult<Order>>('/orders/', { params })
+    return data
+  } catch (err) {
+    throw parseApiError(err)
   }
-
+}
   async getOrder(id: number): Promise<Order> {
     try {
       const { data } = await apiClient.get<Order>(`/orders/${id}/`)
@@ -62,5 +62,15 @@ export class AxiosOrderRepository implements OrderRepository {
       throw parseApiError(err)
     }
   }
+
+
+async updateOrderStatus(id: number, status: OrderStatus): Promise<Order> {
+  try {
+    const { data } = await apiClient.post<Order>(`/orders/${id}/update-status/`, { status })
+    return data
+  } catch (err) {
+    throw parseApiError(err)
+  }
+}
   
 }
