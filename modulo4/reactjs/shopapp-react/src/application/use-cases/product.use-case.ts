@@ -9,7 +9,7 @@ import type { CreateProductDto } from '../dtos/create-product.dto'
 
 export class ProductUseCase {
   private readonly productRepository: ProductRepository
-  constructor (productRepository: ProductRepository){
+  constructor(productRepository: ProductRepository) {
     this.productRepository = productRepository
   }
 
@@ -22,7 +22,7 @@ export class ProductUseCase {
   }
 
   getStats(): Promise<ProductStats> {
-  return this.productRepository.getStats()
+    return this.productRepository.getStats()
   }
 
   // ── Añadir a la clase ProductUseCase existente ──
@@ -40,6 +40,10 @@ export class ProductUseCase {
 
   restockProduct(id: number, quantity: number): Promise<{ id: number; name: string; new_stock: number }> {
     return this.productRepository.restockProduct(id, quantity)
+  }
+
+  uploadImage(id: number, file: File): Promise<Product> {
+    return this.productRepository.uploadImage(id, file)
   }
 
 }

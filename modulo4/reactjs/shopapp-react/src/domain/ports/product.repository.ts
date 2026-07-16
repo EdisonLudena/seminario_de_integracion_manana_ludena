@@ -7,6 +7,7 @@ import type { ProductStats } from '../entities/product-stats.entity'
 export interface ProductRepository {
   getProducts(filters?: Partial<ProductFilters>, page?: number): Promise<PaginatedResult<Product>>
   getProduct(id: number): Promise<Product>
+  uploadImage(id: number, file: File): Promise<Product>
   getStats(): Promise<ProductStats>
 
   // ── Añadido en el módulo 11 ─────────────────────────────────────────────

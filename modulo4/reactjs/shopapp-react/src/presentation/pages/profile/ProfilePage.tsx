@@ -10,6 +10,7 @@ import { Loader2, ShieldCheck, ExternalLink } from 'lucide-react'
 import { useAuthStore } from '@/presentation/store/auth.store'
 import { useProfileStore } from '@/presentation/store/profile.store'
 import { UserAvatar } from '@/presentation/components/UserAvatar'
+import { ImageUploader } from '@/presentation/components/ImageUploader'
 
 import {
   Card,
@@ -39,7 +40,8 @@ type ProfileFormData = z.infer<typeof profileSchema>
 
 export default function ProfilePage() {
   const isStaff = useAuthStore((s) => s.user?.is_staff)
-  const { profile, isLoading, isSaving, error, fetchProfile, updateProfile } = useProfileStore()
+  const { profile, isLoading, isSaving, error, fetchProfile, updateProfile, uploadAvatar } =
+    useProfileStore() 
 
   useEffect(() => {
     fetchProfile()
@@ -79,6 +81,9 @@ export default function ProfilePage() {
       // El error ya quedó en el store y se muestra inline debajo del formulario
     }
   }
+  async function handleAvatarUpload(file: File) {
+    await uploadAvatar(file)
+  }
 
   if (isLoading) {
     return (
@@ -101,6 +106,35 @@ export default function ProfilePage() {
 
         {/* ── Tab: Información ────────────────────────────────────────────── */}
         <TabsContent value="info" className="mt-6">
+           <CardHeader>
+          <CardTitle>Información de cuenta</CardTitle>
+          <CardDescription>Tus datos personales registrados en ShopApp.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-center gap-5">
+            <div className="flex flex-col items-center gap-2">
+              <UserAvatar user={profile} size="lg" />
+              <ImageUploader
+                currentImageUrl={profile?.avatar_url ?? null}
+                onUpload={handleAvatarUpload}
+                circular
+                className="hidden" // el área grande se reemplaza por el flujo de abajo — ver nota
+              />
+            </div>
+            {/* ... resto del bloque de nombre/email/badge sin cambios ... */}
+          </div>
+
+          {/* Sección dedicada para cambiar el avatar */}
+          <div className="flex flex-col items-center gap-3 border-t pt-6">
+            <h3 className="text-sm font-medium text-muted-foreground">Foto de perfil</h3>
+            <ImageUploader
+              currentImageUrl={profile?.avatar_url ?? null}
+              onUpload={handleAvatarUpload}
+              circular
+            />
+          </div>
+        </CardContent>
+     
           <Card>
             <CardHeader>
               <CardTitle>Información de cuenta</CardTitle>

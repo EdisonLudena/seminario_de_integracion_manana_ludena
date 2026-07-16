@@ -15,7 +15,6 @@ import { toast } from 'sonner'
 import { AdminShell } from '@/presentation/components/AdminShell'
 import { Button } from '@/presentation/components/ui/button'
 import { Input } from '@/presentation/components/ui/input'
-import { Badge } from '@/presentation/components/ui/badge'
 import { Skeleton } from '@/presentation/components/ui/skeleton'
 import { Switch } from '@/presentation/components/ui/switch'
 import {

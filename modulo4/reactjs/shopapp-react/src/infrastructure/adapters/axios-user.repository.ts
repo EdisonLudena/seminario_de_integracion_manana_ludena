@@ -9,13 +9,13 @@ import type { PaginatedResult } from '@/domain/entities/paginated-result.entity'
 
 export class AxiosUserRepository implements UserRepository {
   async getStats(): Promise<UserStats> {
-  try {
-    const { data } = await apiClient.get<UserStats>('/users/stats/')
-    return data
-  } catch (err) {
-    throw parseApiError(err)
+    try {
+      const { data } = await apiClient.get<UserStats>('/users/stats/')
+      return data
+    } catch (err) {
+      throw parseApiError(err)
+    }
   }
-}
   async getProfile(): Promise<UserProfile> {
     try {
       const { data } = await apiClient.get<UserProfile>('/users/profile/')
@@ -39,34 +39,45 @@ export class AxiosUserRepository implements UserRepository {
   }
 
   async getUsers(page = 1, search?: string): Promise<PaginatedResult<AdminUser>> {
-  try {
-    const params: Record<string, string | number> = { page }
-    if (search) params.search = search
-    const { data } = await apiClient.get<PaginatedResult<AdminUser>>('/users/', { params })
-    return data
-  } catch (err) {
-    throw parseApiError(err)
+    try {
+      const params: Record<string, string | number> = { page }
+      if (search) params.search = search
+      const { data } = await apiClient.get<PaginatedResult<AdminUser>>('/users/', { params })
+      return data
+    } catch (err) {
+      throw parseApiError(err)
+    }
   }
-}
 
-async updateUserStaffStatus(id: number, isStaff: boolean): Promise<AdminUser> {
-  try {
-    const { data } = await apiClient.patch<AdminUser>(`/users/${id}/`, { is_staff: isStaff })
-    return data
-  } catch (err) {
-    throw parseApiError(err)
+  async updateUserStaffStatus(id: number, isStaff: boolean): Promise<AdminUser> {
+    try {
+      const { data } = await apiClient.patch<AdminUser>(`/users/${id}/`, { is_staff: isStaff })
+      return data
+    } catch (err) {
+      throw parseApiError(err)
+    }
   }
-}
 
-async toggleUserActive(id: number): Promise<{ is_active: boolean }> {
-  try {
-    const { data } = await apiClient.post<{ message: string; is_active: boolean }>(
-      `/users/${id}/toggle-active/`,
-      {},
-    )
-    return { is_active: data.is_active }
-  } catch (err) {
-    throw parseApiError(err)
+  async toggleUserActive(id: number): Promise<{ is_active: boolean }> {
+    try {
+      const { data } = await apiClient.post<{ message: string; is_active: boolean }>(
+        `/users/${id}/toggle-active/`,
+        {},
+      )
+      return { is_active: data.is_active }
+    } catch (err) {
+      throw parseApiError(err)
+    }
   }
-}
+  async uploadAvatar(file: File): Promise<UserProfile> {
+    const formData = new FormData()
+    formData.append('avatar', file)
+
+    try {
+      const { data } = await apiClient.patch<UserProfile>('/users/profile/', formData)
+      return data
+    } catch (err) {
+      throw parseApiError(err)
+    }
+  }
 }

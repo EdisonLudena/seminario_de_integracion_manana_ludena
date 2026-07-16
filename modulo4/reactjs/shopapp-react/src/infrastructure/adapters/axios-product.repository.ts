@@ -91,5 +91,19 @@ async restockProduct(
     throw parseApiError(err)
   }
 }
+
+
+// ── Agregar a la clase AxiosProductRepository existente ──
+async uploadImage(id: number, file: File): Promise<Product> {
+  const formData = new FormData()
+  formData.append('image', file)
+
+  try {
+    const { data } = await apiClient.patch<Product>(`/products/${id}/`, formData)
+    return data
+  } catch (err) {
+    throw parseApiError(err)
+  }
+}
   
 }
