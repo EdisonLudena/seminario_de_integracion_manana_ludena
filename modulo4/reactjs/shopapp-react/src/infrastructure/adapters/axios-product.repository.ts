@@ -99,11 +99,15 @@ async uploadImage(id: number, file: File): Promise<Product> {
   formData.append('image', file)
 
   try {
-    const { data } = await apiClient.patch<Product>(`/products/${id}/`, formData)
+    const { data } = await apiClient.patch<Product>(`/products/${id}/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
     return data
   } catch (err) {
     throw parseApiError(err)
-  }
+  } 
 }
   
 }
